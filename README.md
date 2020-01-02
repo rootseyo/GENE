@@ -1,0 +1,2 @@
+# GENE
+kanban board reporting 
