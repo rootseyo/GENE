@@ -1,4 +1,4 @@
-# Jira kanban velocity meter
+# Jira Cloud kanban velocity meter
 ## Description
 	Chart kanban story points.
 
@@ -7,7 +7,12 @@
 	pip3 install flask
 
 ## How to play
-	python3 app.py
+	copy to config.py from config.sample.py
+	Create an API token from your Atlassian account
+		Log in to https://id.atlassian.com/manage/api-tokens.
+		Click Create API token.
+	Run flask application	
+		python3 app.py
 
 ### Sample image
 ![Sample](./sample.png)
