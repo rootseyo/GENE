@@ -8,3 +8,5 @@
 
 ## How to play
 	python3 app.py
+
+![Sample](./sample.png)
