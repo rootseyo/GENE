@@ -9,4 +9,5 @@
 ## How to play
 	python3 app.py
 
+### Sample image
 ![Sample](./sample.png)
