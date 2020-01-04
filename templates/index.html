@@ -1,15 +1,180 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="/static/jquery-3.4.1.min.js"></script>
+    <script src="/static/Chart.min.js"></script>
+    <style href="/static/Chart.min.css"></style>
     <title>Flask Index</title>
 </head>
+
 <body>
+    <style>
+        #input_jql {
+            width: 70%;
+            height: 35px;
+            border: 2px solid #4bc0c0;
+            margin: 5px;
+            padding: 5px;
+            font-size: 18px;
+        }
 
-<h1>Hello Flask</h1>
-<p>This page is for Flask tutorial.</p>
+        #btn_make_report {
+            margin: 5px;
+            font-size: 20px;
+        }
 
+        .hide {
+            display: none;
+        }
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+    </style>
+
+    <h1>Jira issue point report</h1>
+    <div>
+        <input type='text' id='input_jql'>
+    </div>
+
+    <button onclick=makeReport() id='btn_make_report'>Make Report</button><span class="hide" id="msg_inprogress">In
+        progress...</span>
+    <div style="height:500px; width:1000px;">
+        <canvas id="myChart" width="1000" height="500"></canvas>
+    </div>
+
+    <h2>More information</h2>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Assignee</th>
+            <th>Summary</th>
+            <th>Story Point</th>
+        </tr>
+        <tbody id='tbody_info'>
+        </tbody>
+    </table>
+
+
+    <script>
+        $(function () {
+            $("#input_jql").val(getCookie('jql'));
+        });
+
+        function makeReport() {
+            jql = $("#input_jql").val();
+            setCookie('jql', jql, 365);
+            $("#btn_make_report").attr('disabled', true);
+            $("#msg_inprogress").show();
+            $.post("/point/report", { jql: jql }, function (dd) {
+
+                $("#btn_make_report").attr('disabled', false);
+                $("#msg_inprogress").hide();
+                let point = new Array();
+                let issue_cnt = new Array();
+                for (let i in Object.values(dd[0])) {
+                    point.push(Object.values(dd[0])[i].point);
+                    issue_cnt.push(Object.values(dd[0])[i].cnt);
+                }
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: Object.keys(dd[0]),
+                        datasets: [{
+                            label: 'Story Point Report',
+                            data: point,
+                            borderColor: 'rgba(75, 192, 191, 1)',
+                            backgroundColor: 'rgba(0, 0, 0, 0)',
+                            fill: false,
+                            lineTension: 0
+                        },
+                        {
+                            label: 'Issue Count Report',
+                            data: issue_cnt,
+                            borderColor: 'rgba(222, 53, 11, 1)',
+                            backgroundColor: 'rgba(0, 0, 0, 0)',
+                            fill: false,
+                            lineTension: 0
+                        },
+
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        tooltips: {
+                            mode: 'index'
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Value'
+                                },
+                                ticks: {
+                                    suggestedMin: 0,
+                                    suggestedMax: 10,
+                                }
+                            }]
+                        }
+                    }
+                });
+
+                // more info table
+                for (let i in dd[1]) {
+                    let dt = `<td>${dd[1][i].resolutiondate}</td>`;
+                    let as = `<td>${dd[1][i].assignee}</td>`;
+                    let sm = `<td>${dd[1][i].summaray}</td>`;
+                    let pt = `<td>${dd[1][i].point}</td>`;
+                    $("#tbody_info").append(`<tr>${dt} ${as} ${sm} ${pt} </tr>`);
+                }
+
+            })
+                .fail(function (e) {
+                    console.info(e);
+                    $("#btn_make_report").attr('disabled', false);
+                    $("#msg_inprogress").hide();
+                });
+        }
+
+        var setCookie = function (name, value, day) {
+            var date = new Date();
+            date.setTime(date.getTime() + day * 60 * 60 * 24 * 1000);
+            document.cookie = name + '=' + value + ';expires=' + date.toUTCString() + ';path=/';
+        };
+
+
+        var getCookie = function (name) {
+            var value = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+            return value ? value[2] : null;
+        };
+
+
+    </script>
 </body>
+
 </html>
