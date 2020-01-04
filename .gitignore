@@ -1,3 +1,5 @@
 .vscode/
 config.py
 __pycache__/
+.project
+.DS_Store
