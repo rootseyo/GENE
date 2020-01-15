@@ -100,20 +100,19 @@
                     data: {
                         labels: Object.keys(dd[0]),
                         datasets: [{
-                            label: 'Story Point Report',
+                            label: 'Story Point',
                             data: point,
-                            borderColor: 'rgba(75, 192, 191, 1)',
+                            borderColor: 'rgba(255, 99, 132, 0.82)',
                             backgroundColor: 'rgba(0, 0, 0, 0)',
                             fill: false,
                             lineTension: 0
                         },
                         {
-                            label: 'Issue Count Report',
+                            label: 'Issue Count',
                             data: issue_cnt,
-                            borderColor: 'rgba(222, 53, 11, 1)',
-                            backgroundColor: 'rgba(0, 0, 0, 0)',
-                            fill: false,
-                            lineTension: 0
+                            borderColor: 'rgba(75, 192, 191, 1)',
+                            backgroundColor: 'rgba(49, 145, 211, 0.70)',
+                            type: 'bar'
                         },
 
                         ]
